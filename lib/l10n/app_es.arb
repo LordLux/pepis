@@ -15,5 +15,5 @@
     "warningDialogEmpty": "Campo vacío",
     "warningDialogFormat_date": "Use el formato dd/MM/yyyy",
     "warningDialog_dateFuture": "La fecha no puede estar en el futuro",
-    "warningDialog_datePast": "La fecha no puede estar en el pasado"
+    "warningDialog_datePast": "La fecha no puede estar en el pasado" 
 }
