@@ -70,26 +70,78 @@ int sumOfYearDigits(int year) {
   return sum;
 }
 
-int getKi(int value, bool kiA) => kiA ? _getKiA(value) : _getKiB(value);
+(String, DateTime) getKi(DateTime birthDate) {
+  int birthYear = birthDate.year;
+  int rowIndex = -1;
+  for (int i = 0; i < dateRanges.length; i++) {
+    DateTime start = DateTime(birthDate.year, dateRanges[i]["start"].month, dateRanges[i]["start"].day);
+    DateTime end = DateTime(birthDate.year, dateRanges[i]["end"].month, dateRanges[i]["end"].day);
+
+    if ((birthDate.isAfter(start) || birthDate.isAtSameMomentAs(start)) && (birthDate.isBefore(end) || birthDate.isAtSameMomentAs(end))) {
+      rowIndex = i;
+      break;
+    }
+  }
+
+  int colIndex = _calculateYearValue(birthYear);
+
+  return (dataTable()[rowIndex][colIndex - 1], dateRanges[rowIndex]["end"]);
+}
+
+int _calculateYearValue(int year) {
+  int baseYear = 1901;
+  int baseValue = 9;
+
+  int offset = (year - baseYear) % 9;
+
+  int yearValue = baseValue - offset;
+
+  if (yearValue <= 0) yearValue += 9;
+
+  return yearValue;
+}
+
+int getPartKi(int value, bool kiA) => kiA ? _getKiA(value) : _getKiB(value);
 
 int _getKiA(int value) {
-  if (value >= 10)
-    // Convert to string, get the first character, and parse it back to an integer
-    return int.parse(value.toString()[0]);
+  if (value >= 10) return int.parse(value.toString()[0]);
   return 0;
 }
 
 int _getKiB(int value) {
-  if (value >= 10)
-    // Convert to string, get the last character, and parse it back to an integer
-    return int.parse(value.toString().substring(value.toString().length - 1));
+  if (value >= 10) return int.parse(value.toString().substring(value.toString().length - 1));
   return value;
 }
 
-int getEnergy(int year, int g, int h) => year != 2000 ? 11 - (g + h) : 10 - (g + h);
+int getEnergy(int year, int g, int h) {
+  if (year != 2000) return 11 - (g + h);
+  return 10 - (g + h);
+}
+
+(int, int) getKGen(int kiA, int kiB, Gender g, int en) {
+  int kiSum = kiA + kiB;
+  int first = 0;
+  int last = 0;
+  if (kiSum >= 10) first = getNumberPart(kiSum, first: true);
+  if (kiSum >= 10) last = getNumberPart(kiSum, first: false);
+
+  int kGen2 = _getKGen2(g, first, last, en);
+
+  return (kiSum, kGen2);
+}
+
+int getNumberPart(int n, {bool first = true}) {
+  if (first) return int.parse(n.toString()[0]);
+  return n % 10;
+}
+
+int _getKGen2(Gender g, int o, int p, int k) {
+  if (g == Gender.M) return (o + p) + 4;
+  return k;
+}
 
 int getKua(Gender gender, int value) {
-  int defaultValue = 0;
+  int defaultValue = -1;
   if (gender == Gender.F) return kuaMale[value] ?? defaultValue;
   if (gender == Gender.M) return kuaFemale[value] ?? defaultValue;
   return defaultValue;
@@ -118,10 +170,10 @@ int selectCoordinate(DateTime birthDate, DateTime referenceDate, int coord1, int
 String indexLookup(int row, int column) {
   int rowIndex = row - 1;
   int colIndex = column - 1;
+  List<List<String>> table = dataTable();
 
-  if (rowIndex < 0 || rowIndex >= dataTable.length || colIndex < 0 || colIndex >= dataTable[rowIndex].length) return lang.invalidIndex;
-
-  return dataTable[rowIndex][colIndex];
+  if (rowIndex < 0 || rowIndex >= table.length || colIndex < 0 || colIndex >= table[rowIndex].length) return lang.error_invalidIndex;
+  return table[rowIndex][colIndex];
 }
 
-String getStarDistribution(Direction direction) => directionLookupLong[direction] ?? lang.notFound;
+String getStarDistribution(Direction direction) => directionLookupLong[direction] ?? lang.error_notFound;

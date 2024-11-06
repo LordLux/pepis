@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:pepis/vars.dart';
+import 'package:uuid/uuid.dart';
 
 import 'enums.dart';
 import 'services/functions.dart';
@@ -10,25 +11,20 @@ class FengShuiModel {
   String name;
   Gender gender;
   DateTime birthDate;
-  String ki;
-
+  late DateTime colFecha;
   late int total;
   late int kiA;
   late int kiB;
 
   late int energy;
+  late String ki;
+  late int kGen1;
+  late int kGen2;
   late int kua;
 
   late Direction direction;
   late Materials material;
 
-  late DateTime colFecha;
-  late int coord1;
-  late int coord2;
-  late int coord;
-  late int filaFecha;
-
-  late String coordTki;
   late String starDistribution;
 
   FengShuiModel({
@@ -36,36 +32,32 @@ class FengShuiModel {
     required this.name,
     required this.gender,
     required this.birthDate,
-    required this.ki,
   }) {
-    colFecha = defaultDateMapping;
+    final res = getKi(birthDate);
+    ki = res.$1;
+    colFecha = res.$2;
     total = sumOfYearDigits(birthDate.year);
-    kiA = getKi(total, true);
-    kiB = getKi(total, false);
+    kiA = getPartKi(total, true);
+    kiB = getPartKi(total, false);
 
     energy = getEnergy(birthDate.year, kiA, kiB);
-
+    final res2 = getKGen(kiA, kiB, gender, energy);
+    kGen1 = res2.$1;
+    kGen2 = res2.$2;
     kua = getKua(gender, birthDate.year);
 
     direction = vLookup(kua, directionLookup);
 
     material = vLookup(energy, materialLookup);
-    coord1 = getDateCoord1(colFecha);
-    coord2 = getDateCoord2(birthDate);
-    coord = selectCoordinate(birthDate, colFecha, coord1, coord2);
-
-    filaFecha = energy;
-    coordTki = indexLookup(coord, filaFecha);
     starDistribution = getStarDistribution(direction);
   }
-  
+
   factory FengShuiModel.fromMap(Map<String, dynamic> map) {
     return FengShuiModel(
       id: map['id'],
       name: map['name'],
       gender: Gender.values[map['gender']],
-      birthDate: DateTime.parse(map['birthDate']),
-      ki: map['ki'],
+      birthDate: stringToDate(map['birthDate'])!,
     );
   }
 
@@ -74,21 +66,15 @@ class FengShuiModel {
       'id': id,
       'name': name,
       'gender': gender.index,
-      'birthDate': birthDate.toIso8601String(),
-      'ki': ki,
+      'birthDate': dateToString(birthDate),
       'total': total,
       'kiA': kiA,
       'kiB': kiB,
-      'energy': energy,
       'kua': kua,
+      'energy': energy,
+      'ki': ki,
       'direction': direction.index,
       'material': material.index,
-      'colFecha': colFecha.toIso8601String(),
-      'coord1': coord1,
-      'coord2': coord2,
-      'coord': coord,
-      'filaFecha': filaFecha,
-      'coordTki': coordTki,
       'starDistribution': starDistribution,
     };
   }

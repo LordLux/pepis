@@ -17,169 +17,76 @@ DateFormats dateFormat = DateFormats.DMY;
 const Color femalePink = Color.fromARGB(255, 239, 131, 255);
 const Color maleBlue = Color.fromARGB(255, 69, 143, 255);
 
-final Map<int, int> kuaFemale = {
-  1930: 8,
-  1931: 9,
-  1932: 1,
-  1933: 2,
-  1934: 3,
-  1935: 4,
-  1936: 8,
-  1937: 6,
-  1938: 7,
-  1939: 8,
-  1944: 4,
-  1945: 8,
-  1946: 6,
-  1947: 7,
-  1948: 8,
-  1949: 9,
-  1950: 1,
-  1951: 2,
-  1952: 3,
-  1953: 4,
-  1954: 8,
-  1955: 6,
-  1956: 7,
-  1957: 8,
-  1958: 9,
-  1959: 1,
-  1960: 2,
-  1961: 3,
-  1962: 4,
-  1963: 8,
-  1964: 6,
-  1965: 7,
-  1966: 8,
-  1967: 9,
-  1968: 1,
-  1969: 2,
-  1970: 3,
-  1971: 4,
-  1972: 8,
-  1973: 6,
-  1974: 7,
-  1975: 8,
-  1976: 9,
-  1977: 1,
-  1978: 2,
-  1979: 3,
-  1980: 4,
-  1981: 8,
-  1982: 6,
-  1983: 7,
-  1984: 8,
-  1985: 9,
-  1986: 1,
-  1987: 2,
-  1988: 3,
-  1993: 8,
-  1994: 9,
-  1995: 1,
-  1996: 2,
-  1997: 3,
-  1998: 4,
-  1999: 8,
-  2000: 6,
-  2001: 7,
-  2002: 8,
-  2003: 9,
-  2004: 1,
-  2005: 2,
-  2006: 3,
-  2007: 4,
-  2008: 8,
-  2009: 6,
-  2010: 7
-};
+Map<int, int> _generateKuaMapping(int startYear, int endYear, int startValue, List<int> pattern) {
+  Map<int, int> kuaMap = {};
+  int patternLength = pattern.length;
 
-final Map<int, int> kuaMale = {
-  1930: 7,
-  1931: 6,
-  1932: 2,
-  1933: 4,
-  1934: 3,
-  1935: 2,
-  1936: 1,
-  1937: 9,
-  1938: 8,
-  1939: 7,
-  1944: 2,
-  1945: 1,
-  1946: 9,
-  1947: 8,
-  1948: 7,
-  1949: 6,
-  1950: 2,
-  1951: 4,
-  1952: 3,
-  1953: 2,
-  1954: 1,
-  1955: 9,
-  1956: 8,
-  1957: 7,
-  1958: 6,
-  1959: 2,
-  1960: 4,
-  1961: 3,
-  1962: 2,
-  1963: 1,
-  1964: 9,
-  1965: 8,
-  1966: 7,
-  1967: 6,
-  1968: 2,
-  1969: 4,
-  1970: 3,
-  1971: 2,
-  1972: 1,
-  1973: 9,
-  1974: 8,
-  1975: 7,
-  1976: 6,
-  1977: 2,
-  1978: 4,
-  1979: 3,
-  1980: 2,
-  1981: 1,
-  1982: 9,
-  1983: 8,
-  1984: 7,
-  1985: 6,
-  1986: 2,
-  1987: 4,
-  1988: 3,
-  1993: 7,
-  1994: 6,
-  1995: 2,
-  1996: 4,
-  1997: 3,
-  1998: 2,
-  1999: 1,
-  2000: 9,
-  2001: 8,
-  2002: 7,
-  2003: 6,
-  2004: 2,
-  2005: 4,
-  2006: 3,
-  2007: 2,
-  2008: 1,
-  2009: 9,
-  2010: 8
-};
+  for (int year = startYear; year <= endYear; year++) {
+    // Calculate the index in the pattern for the current year
+    int patternIndex = (year - startYear) % patternLength;
+    kuaMap[year] = pattern[patternIndex];
+  }
 
-final List<List<String>> dataTable = [
-  // Corresponds to rows DA6 to DI14 in Excel
-  ["1.6.9", "2.9.7", "3.3.5", "4.6.3", "5.9.1", "6.3.8", "7.6.6", "8.9.4", "9.3.2"], // Row 1
-  ["1.8.7", "2.2.5", "3.5.3", "4.8.1", "5.2.8", "6.5.6", "7.8.4", "8.2.2", "9.5.9"], // Row 2
-  ["1.7.8", "2.1.6", "3.4.4", "4.7.2", "5.1.9", "6.4.7", "7.7.5", "8.1.3", "9.4.1"], // Row 3
-  ["1.6.9", "2.9.7", "3.3.5", "4.6.3", "5.9.1", "6.3.8", "7.6.6", "8.9.4", "9.3.2"], // Row 4
-  ["1.5.1", "2.8.8", "3.2.6", "4.5.4", "5.8.2", "6.2.9", "7.5.7", "8.8.5", "9.2.3"], // Row 5
-  ["1.4.2", "2.7.9", "3.1.7", "4.4.5", "5.7.3", "6.1.1", "7.4.8", "8.7.6", "9.1.4"], // Row 6
-  ["1.3.3", "2.6.1", "3.8.9", "4.3.6", "5.6.4", "6.9.2", "7.3.9", "8.6.7", "9.1.4"], // Row 7
-  ["1.2.4", "2.5.2", "3.8.9", "4.2.7", "5.5.6", "6.8.3", "7.2.1", "8.5.8", "9.8.6"], // Row 8
-  ["1.1.5", "2.4.3", "3.7.1", "4.1.8", "5.4.6", "6.7.4", "7.1.2", "8.4.9", "9.7.7"], // Row 9
+  return kuaMap;
+}
+
+final Map<int, int> kuaFemale = _generateKuaMapping(1930, now.year + 100, 8,  [8, 9, 1, 2, 3, 4, 8, 6, 7]);
+final Map<int, int> kuaMale = _generateKuaMapping(1930, now.year + 100, 8,  [7, 6, 2, 4, 3, 2, 1, 9, 8]);
+
+List<List<String>> dataTable({int shift = 0}) {
+  // Initialize the table
+  List<List<String>> table = [];
+
+  // Headers go from 9 down to 1 for each row
+  List<int> firstNumbers = [9, 8, 7, 6, 5, 4, 3, 2, 1]; // Row headers
+  List<int> secondStartValues = [5, 4, 3, 2, 1, 9, 8, 7, 6]; // Starting values for the second number
+  List<int> thirdStartValues = [9, 1, 2, 3, 4, 5, 6, 7, 8];  // Starting values for the third number
+
+  // Generate each row
+  for (int row = 0; row < 9; row++) {
+    int first = firstNumbers[row];
+
+    // Apply the shift to the second and third numbers, with wrap-around logic
+    int second = (secondStartValues[row] - shift) % 9;
+    second = second <= 0 ? second + 9 : second;
+
+    int third = (thirdStartValues[row] + shift) % 9;
+    third = third == 0 ? 9 : third;
+
+    // List to hold the row data
+    List<String> rowData = [];
+
+    // Generate each cell in the row
+    for (int col = 0; col < 9; col++) {
+      // Add the current cell to the row
+      rowData.add('$first.$second.$third');
+
+      // Update second and third values for the next cell
+      second = (second - 1 == 0) ? 9 : second - 1; // Decrease and wrap at 1
+      third = (third + 1 > 9) ? 1 : third + 1;     // Increase and wrap at 9
+    }
+
+    // Add the row to the table
+    table.add(rowData);
+  }
+
+  return table;
+}
+
+
+final List<Map<String, dynamic>> dateRanges = [
+  {"range": "4 Feb - 5 Mar", "start": DateTime(0, 2, 4), "end": DateTime(0, 3, 5)},
+  {"range": "6 Mar - 5 Apr", "start": DateTime(0, 3, 6), "end": DateTime(0, 4, 5)},
+  {"range": "6 Apr - 5 May", "start": DateTime(0, 4, 6), "end": DateTime(0, 5, 5)},
+  {"range": "6 May - 5 Jun", "start": DateTime(0, 5, 6), "end": DateTime(0, 6, 5)},
+  {"range": "6 Jun - 7 Jul", "start": DateTime(0, 6, 6), "end": DateTime(0, 7, 7)},
+  {"range": "8 Jul - 7 Ago", "start": DateTime(0, 7, 8), "end": DateTime(0, 8, 7)},
+  {"range": "8 Ago - 7 Sep", "start": DateTime(0, 8, 8), "end": DateTime(0, 9, 7)},
+  {"range": "8 Sep - 8 Oct", "start": DateTime(0, 9, 8), "end": DateTime(0, 10, 8)},
+  {"range": "9 Oct - 7 Nov", "start": DateTime(0, 10, 9), "end": DateTime(0, 11, 7)},
+  {"range": "8 Nov - 7 Dic", "start": DateTime(0, 11, 8), "end": DateTime(0, 12, 7)},
+  {"range": "8 Dic - 5 Ene", "start": DateTime(0, 12, 8), "end": DateTime(1, 1, 5)},
+  {"range": "6 Ene - 3 Feb", "start": DateTime(1, 1, 6), "end": DateTime(1, 2, 3)},
 ];
 
 final Map<Direction, String> directionLookupLong = {
@@ -194,7 +101,7 @@ final Map<Direction, String> directionLookupLong = {
 };
 
 
-String _a(DateTime date) => DateFormat("dd/MMM", "es").format(date);
+String dateToStringFormattedES(DateTime date,[String divider = "/"]) => DateFormat("dd${divider}MMM", "es").format(date);
 final Map<DateTime, int> dateIndexTable = {
   DateTime(0, 1, 5): 12,
   DateTime(0, 2, 3): 1,
@@ -208,34 +115,6 @@ final Map<DateTime, int> dateIndexTable = {
   DateTime(0, 10, 8): 9,
 };
 
-final Map<String, int> _dateIndexTable = {
-  _a(DateTime(0, 1, 5)): 12,
-  _a(DateTime(0, 2, 3)): 1,
-  _a(DateTime(0, 3, 5)): 2,
-  _a(DateTime(0, 4, 5)): 3,
-  _a(DateTime(0, 5, 5)): 4,
-  _a(DateTime(0, 6, 5)): 5,
-  _a(DateTime(0, 7, 7)): 6,
-  _a(DateTime(0, 8, 7)): 7,
-  _a(DateTime(0, 9, 7)): 8,
-  _a(DateTime(0, 10, 8)): 9,
-};
-
-final Map<DateTime, DateTime> dateLookupTable = {
-  DateTime(2007, 1, 1): DateTime(2015, 1, 5),
-  DateTime(2015, 1, 6): DateTime(2015, 2, 3),
-  DateTime(2015, 2, 4): DateTime(2015, 3, 5),
-  DateTime(2015, 3, 6): DateTime(2015, 4, 5),
-  DateTime(2015, 4, 6): DateTime(2015, 5, 5),
-  DateTime(2015, 5, 6): DateTime(2015, 6, 5),
-  DateTime(2015, 6, 6): DateTime(2015, 7, 7),
-  DateTime(2015, 7, 8): DateTime(2015, 8, 7),
-  DateTime(2015, 8, 8): DateTime(2015, 9, 7),
-  DateTime(2015, 9, 8): DateTime(2015, 10, 8),
-};
-
-DateTime defaultDateMapping = DateTime(2015, 1, 5);
-
 final Map<int, Direction> directionLookup = {
   1: Direction.N,
   2: Direction.SW,
@@ -248,13 +127,13 @@ final Map<int, Direction> directionLookup = {
 };
 
 final Map<int, Materials> materialLookup = {
-  1: Materials.water,
-  2: Materials.earth,
-  3: Materials.wood,
-  4: Materials.wood,
-  5: Materials.earth,
-  6: Materials.metal,
-  7: Materials.metal,
-  8: Materials.earth,
-  9: Materials.fire,
+  1: Materials.Water,
+  2: Materials.Earth,
+  3: Materials.Wood,
+  4: Materials.Wood,
+  5: Materials.Earth,
+  6: Materials.Metal,
+  7: Materials.Metal,
+  8: Materials.Earth,
+  9: Materials.Fire,
 };

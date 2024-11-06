@@ -10,6 +10,8 @@ class DatabaseHelper {
 
   static Database? _database;
 
+  static List<FengShuiModel> people = [];
+
   Future<Database> get database async {
     if (_database != null) return _database!;
     _database = await _initDatabase();
@@ -27,14 +29,19 @@ class DatabaseHelper {
         return db.execute(
           '''
           CREATE TABLE people(
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT,
-            gender TEXT,
-            birthDate TEXT,
-            year INTEGER,
-            total REAL,
-            kiA INTEGER,
-            kiB INTEGER
+            id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+            name TEXT NOT NULL,
+            gender INTEGER NOT NULL,
+            birthDate TEXT NOT NULL,
+            total INTEGER NOT NULL,
+            kiA INTEGER NOT NULL,
+            kiB INTEGER NOT NULL,
+            kua INTEGER NOT NULL,
+            energy INTEGER NOT NULL,
+            ki TEXT NOT NULL,
+            direction INTEGER NOT NULL,
+            material INTEGER NOT NULL,
+            starDistribution TEXT NOT NULL
           )
           ''',
         );
@@ -47,7 +54,7 @@ class DatabaseHelper {
     try {
       final db = await database;
       await db.insert('people', person.toMap());
-      
+
       print('Person ${person.name} inserted');
       return 0;
     } catch (e) {
@@ -59,9 +66,10 @@ class DatabaseHelper {
   Future<List<FengShuiModel>> getPeople() async {
     final db = await database;
     final List<Map<String, dynamic>> maps = await db.query('people');
-    return List.generate(maps.length, (i) {
+    people = List.generate(maps.length, (i) {
       return FengShuiModel.fromMap(maps[i]);
     });
+    return people;
   }
 
   Future<int> updatePerson(FengShuiModel person) async {
@@ -82,4 +90,17 @@ class DatabaseHelper {
       whereArgs: [id],
     );
   }
+
+  Future<void> clearDatabase() async {
+    final db = await database;
+    final tables = ['people'];
+    for (final table in tables) await db.delete(table);
+    print('Database cleared!');
+  }
+}
+
+Future<void> deleteDatabaseFile() async {
+  final dbPath = await getDatabasesPath();
+  final path = join(dbPath, 'people.db');
+  await deleteDatabase(path);
 }
