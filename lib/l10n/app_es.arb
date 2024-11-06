@@ -1,0 +1,19 @@
+{
+    "@@locale": "es",
+    "helloWorld": "¡Hola Mundo!",
+    "fengShui": "Feng Shui",
+    "notFound": "No Encontrado",
+    "errorLoadingPeople": "Error al cargar personas",
+    "addPerson": "Agregar Persona",
+    "save": "Guardar",
+    "invalidIndex": "Índice no válido",
+    "invalidRowIndex": "Índice de fila no válido",
+    "warningDialogEmpty_date": "La fecha no puede estar vacía",
+    "warningDialogEmpty_name": "El nombre no puede estar vacío",
+    "warningDialogEmpty_gender": "El género no puede estar vacío",
+    "warningDialogEmpty_ki": "El KI no puede estar vacío",
+    "warningDialogEmpty": "Campo vacío",
+    "warningDialogFormat_date": "Use el formato dd/MM/yyyy",
+    "warningDialog_dateFuture": "La fecha no puede estar en el futuro",
+    "warningDialog_datePast": "La fecha no puede estar en el pasado"
+}

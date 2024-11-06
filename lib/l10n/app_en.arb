@@ -1,0 +1,68 @@
+{
+    "@@locale": "en",
+    "helloWorld": "Hello World!",
+    "@helloWorld": {
+        "description": "The conventional newborn programmer greeting"
+    },
+    "fengShui": "Feng Shui",
+    "@fengShui": {
+        "description": "The ancient Chinese art of placement"
+    },
+    "notFound": "Not Found",
+    "@notFound": {
+        "description": "The value is not found"
+    },
+    "errorLoadingPeople": "Error loading people",
+    "@errorLoadingPeople": {
+        "description": "An error occurred while loading people"
+    },
+    "addPerson": "Add Person",
+    "@addPerson": {
+        "description": "Add a person"
+    },
+    "save": "Save",
+    "@save": {
+        "description": "Save the changes"
+    },
+    "invalidIndex": "Invalid index",
+    "@invalidIndex": {
+        "description": "The index is invalid"
+    },
+    "invalidRowIndex": "Invalid row index",
+    "@invalidRowIndex": {
+        "description": "The row index is invalid"
+    },
+    "warningDialogEmpty_date": "Date cannot be empty",
+    "@warningDialogEmpty_date": {
+        "description": "Warning message when the date is empty"
+    },
+    "warningDialogEmpty_name": "Name cannot be empty",
+    "@warningDialogEmpty_name": {
+        "description": "Warning message when the name is empty"
+    },
+    "warningDialogEmpty_gender": "Gender cannot be empty",
+    "@warningDialogEmpty_gender": {
+        "description": "Warning message when the gender is empty"
+    },
+    "warningDialogEmpty_ki": "KI cannot be empty",
+    "@warningDialogEmpty_ki": {
+        "description": "Warning message when the KI is empty"
+    },
+    "warningDialogEmpty": "Empty field",
+    "@warningDialogEmpty": {
+        "description": "Generic Warning message when a field is empty"
+    },
+    
+    "warningDialogFormat_date": "Use the format dd/MM/yyyy",
+    "@warningDialogFormat_date": {
+        "description": "Warning message when the date format is incorrect"
+    },
+    "warningDialog_dateFuture": "The date cannot be in the future",
+    "@warningDialog_dateFuture": {
+        "description": "Warning message when the date is in the future"
+    },
+    "warningDialog_datePast": "The date cannot be in the past",
+    "@warningDialog_datePast": {
+        "description": "Warning message when the date is in the past"
+    }
+}
