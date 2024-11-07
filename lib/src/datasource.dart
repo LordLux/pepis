@@ -6,6 +6,8 @@ import 'package:pepis/vars.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:uuid/uuid.dart';
 
+import 'services/functions.dart';
+
 PersonaDataSource? personaDataSource;
 
 Future<PersonaDataSource> getDataSource() async {
@@ -24,8 +26,6 @@ class PersonaDataSource extends DataGridSource {
               DataGridCell<String>(columnName: 'birthDate', value: dateToStringFormattedES(e.birthDate, " ")),
               DataGridCell<int>(columnName: 'year', value: e.birthDate.year),
               DataGridCell<int>(columnName: 'total', value: e.total),
-              DataGridCell<int>(columnName: 'kiA', value: e.kiA),
-              DataGridCell<int>(columnName: 'kiB', value: e.kiB),
               DataGridCell<int>(columnName: 'kua', value: e.kua),
               DataGridCell<int>(columnName: 'energy', value: e.energy),
               DataGridCell<String>(columnName: 'ki', value: e.ki),

@@ -3,6 +3,8 @@ import 'package:intl/intl.dart';
 import 'package:pepis/src/enums.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import 'src/services/core_functions.dart';
+
 // Dynamic
 DateTime epoch = DateTime.fromMillisecondsSinceEpoch(0);
 DateTime get now => DateTime.now();
@@ -12,6 +14,7 @@ late AppLocalizations lang;
 
 // Settings
 DateFormats dateFormat = DateFormats.DMY;
+bool longMonth = false;
 
 // Constants
 const Color femalePink = Color.fromARGB(255, 239, 131, 255);
@@ -33,43 +36,34 @@ Map<int, int> _generateKuaMapping(int startYear, int endYear, int startValue, Li
 final Map<int, int> kuaFemale = _generateKuaMapping(1930, now.year + 100, 8,  [8, 9, 1, 2, 3, 4, 8, 6, 7]);
 final Map<int, int> kuaMale = _generateKuaMapping(1930, now.year + 100, 8,  [7, 6, 2, 4, 3, 2, 1, 9, 8]);
 
+//TODO fix out of range error
 List<List<String>> dataTable({int shift = 0}) {
-  // Initialize the table
   List<List<String>> table = [];
 
-  // Headers go from 9 down to 1 for each row
-  List<int> firstNumbers = [9, 8, 7, 6, 5, 4, 3, 2, 1]; // Row headers
-  List<int> secondStartValues = [5, 4, 3, 2, 1, 9, 8, 7, 6]; // Starting values for the second number
-  List<int> thirdStartValues = [9, 1, 2, 3, 4, 5, 6, 7, 8];  // Starting values for the third number
+  List<int> firstNumbers = [9, 8, 7, 6, 5, 4, 3, 2, 1];
+  List<int> secondStartValues = [5, 4, 3, 2, 1, 9, 8, 7, 6];
+  List<int> thirdStartValues = [9, 1, 2, 3, 4, 5, 6, 7, 8];
 
-  // Generate each row
   for (int row = 0; row < 9; row++) {
     int first = firstNumbers[row];
 
-    // Apply the shift to the second and third numbers, with wrap-around logic
     int second = (secondStartValues[row] - shift) % 9;
     second = second <= 0 ? second + 9 : second;
 
     int third = (thirdStartValues[row] + shift) % 9;
     third = third == 0 ? 9 : third;
 
-    // List to hold the row data
     List<String> rowData = [];
 
-    // Generate each cell in the row
-    for (int col = 0; col < 9; col++) {
-      // Add the current cell to the row
+    for (int col = 0; col < 12; col++) {
       rowData.add('$first.$second.$third');
-
-      // Update second and third values for the next cell
+      
       second = (second - 1 == 0) ? 9 : second - 1; // Decrease and wrap at 1
       third = (third + 1 > 9) ? 1 : third + 1;     // Increase and wrap at 9
     }
 
-    // Add the row to the table
     table.add(rowData);
   }
-
   return table;
 }
 
@@ -101,7 +95,6 @@ final Map<Direction, String> directionLookupLong = {
 };
 
 
-String dateToStringFormattedES(DateTime date,[String divider = "/"]) => DateFormat("dd${divider}MMM", "es").format(date);
 final Map<DateTime, int> dateIndexTable = {
   DateTime(0, 1, 5): 12,
   DateTime(0, 2, 3): 1,

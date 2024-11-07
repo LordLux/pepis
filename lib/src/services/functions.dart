@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:recase/recase.dart';
 
 import '../../vars.dart';
 import '../enums.dart';
+import 'core_functions.dart';
 
 DateTime? stringToDate(String date, [bool strict = false]) => strict ? _stringToDateStrict(date) : _stringToDateUnStrict(date);
 
@@ -35,6 +37,16 @@ String dateToString(DateTime date) {
   }
 }
 
+String dateToStringFormattedES(DateTime date, [String divider = "/"]) {
+  final a = DateFormat("dd", "es").format(date);
+  
+  String format = "MMM";
+  if (longMonth) format += "M";
+  final b = DateFormat(format, "es").format(date).titleCase;
+  
+  return "$a$divider$b";
+}
+
 bool isValidDate(String date, [bool strict = false]) => strict ? _isValidDateStrict(date) : _isValidDateUnstrict(date);
 
 bool _isValidDateUnstrict(String date) {
@@ -58,7 +70,7 @@ bool _isValidDateStrict(String date) {
 
 Future<DateTime?> selectDate(BuildContext context, {DateTime? firstDate, DateTime? lastDate}) async {
   firstDate ??= DateTime(now.year - 150, 0, 0);
-  lastDate ??= DateTime(now.year + 150, 0, 0);
+  lastDate ??= DateTime(now.year, 0, 0);
   return (await showDatePicker(context: context, firstDate: firstDate, lastDate: lastDate));
 }
 
@@ -70,22 +82,81 @@ int sumOfYearDigits(int year) {
   return sum;
 }
 
-(String, DateTime) getKi(DateTime birthDate) {
-  int birthYear = birthDate.year;
-  int rowIndex = -1;
-  for (int i = 0; i < dateRanges.length; i++) {
-    DateTime start = DateTime(birthDate.year, dateRanges[i]["start"].month, dateRanges[i]["start"].day);
-    DateTime end = DateTime(birthDate.year, dateRanges[i]["end"].month, dateRanges[i]["end"].day);
+void printFormattedList(List<List<String>> list) {
+  int rows = list[0].length;
+  int cols = list.length;
 
-    if ((birthDate.isAfter(start) || birthDate.isAtSameMomentAs(start)) && (birthDate.isBefore(end) || birthDate.isAtSameMomentAs(end))) {
-      rowIndex = i;
-      break;
+  for (int i = 0; i < rows; i++) {
+    String row = '';
+    for (int j = 0; j < cols; j++) {
+      row += list[j][i] + (j < cols - 1 ? '  ' : '');
+    }
+    log(row);
+  }
+}
+
+void printFormattedListWithHighlight(List<List<String>> list, int highlightX, int highlightY) {
+  int rows = list[0].length;
+  int cols = list.length;
+
+  List<List<dynamic>> messages = [];
+
+  for (int i = 0; i < rows; i++) {
+    for (int j = 0; j < cols; j++) {
+      String cellValue = list[j][i];
+
+      // Highlight the specific cell in red
+      if (i == highlightY && j == highlightX) {
+        messages.add([cellValue, Colors.amber]);
+      }
+      // Highlight cells in the same row or column in green
+      else if ((i == highlightY && j < highlightX) || (j == highlightX && i < highlightY)) {
+        messages.add([cellValue, Colors.lightBlue]);
+      }
+      // Default color for other cells
+      else {
+        messages.add([cellValue, Colors.white]);
+      }
+
+      if (j < cols - 1) {
+        messages.add(['  ']); // Add spacing between elements
+      }
+    }
+    messages.add(['\n']); // Add newline after
+  }
+
+  logMulti(messages);
+}
+
+(String, DateTime) getKi(DateTime birthDate) {
+  List<List<String>> table = dataTable();
+  int rowIndex = _calculateDateValue(birthDate);
+  int colIndex = _calculateYearValue(birthDate.year);
+  printFormattedListWithHighlight(table, colIndex, rowIndex);
+
+  return (table[colIndex][rowIndex], dateRanges[rowIndex]["end"]);
+}
+
+int _calculateDateValue(DateTime birthDate) {
+  // Adjust the birthDate to a common year for comparison (e.g., 2000)
+  DateTime adjustedBirthDate = DateTime(2000, birthDate.month, birthDate.day);
+
+  for (int i = 0; i < dateRanges.length; i++) {
+    DateTime start = DateTime(2000, dateRanges[i]["start"].month, dateRanges[i]["start"].day);
+    DateTime end = DateTime(2000, dateRanges[i]["end"].month, dateRanges[i]["end"].day);
+
+    // Adjust the end date if the range crosses over the year boundary
+    if (dateRanges[i]["start"].month > dateRanges[i]["end"].month) //
+      end = DateTime(2001, dateRanges[i]["end"].month, dateRanges[i]["end"].day);
+
+    if ((adjustedBirthDate.isBetween(start, end)) && //
+        (adjustedBirthDate.isBetween(start, end))) {
+      return i;
     }
   }
 
-  int colIndex = _calculateYearValue(birthYear);
-
-  return (dataTable()[rowIndex][colIndex - 1], dateRanges[rowIndex]["end"]);
+  logErr("Error: Date not found: ${dateToString(birthDate)}");
+  return -1;
 }
 
 int _calculateYearValue(int year) {
@@ -148,32 +219,5 @@ int getKua(Gender gender, int value) {
 }
 
 dynamic vLookup(int key, Map table) => table[key];
-
-int getDateCoord1(DateTime date) => dateIndexTable[date] ??= 0;
-
-int getDateCoord2(DateTime date) {
-  final entries = dateIndexTable.entries.toList();
-  final refDate1 = entries[entries.length - 2].key;
-  final value1 = entries[entries.length - 2].value;
-  final refDate2 = entries[entries.length - 1].key;
-  final value2 = entries[entries.length - 1].value;
-
-  if (date.isBefore(refDate1)) return value1;
-  if (date.isBefore(refDate2)) return value2;
-  return -1;
-}
-
-int selectCoordinate(DateTime birthDate, DateTime referenceDate, int coord1, int coord2) {
-  return birthDate.isBefore(referenceDate) || birthDate.isAtSameMomentAs(referenceDate) ? coord1 : coord2;
-}
-
-String indexLookup(int row, int column) {
-  int rowIndex = row - 1;
-  int colIndex = column - 1;
-  List<List<String>> table = dataTable();
-
-  if (rowIndex < 0 || rowIndex >= table.length || colIndex < 0 || colIndex >= table[rowIndex].length) return lang.error_invalidIndex;
-  return table[rowIndex][colIndex];
-}
 
 String getStarDistribution(Direction direction) => directionLookupLong[direction] ?? lang.error_notFound;

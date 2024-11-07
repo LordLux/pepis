@@ -68,8 +68,6 @@ class FengShuiModel {
       'gender': gender.index,
       'birthDate': dateToString(birthDate),
       'total': total,
-      'kiA': kiA,
-      'kiB': kiB,
       'kua': kua,
       'energy': energy,
       'ki': ki,

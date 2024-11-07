@@ -8,13 +8,13 @@ import '../services/functions.dart';
 import '../services/input_formatters.dart';
 import '../services/random.dart';
 
-GlobalKey<PersonDialogStatefulState> personaDialogKey = GlobalKey<PersonDialogStatefulState>();
+GlobalKey<PersonDialogStatefulState> addPersonaDialogKey = GlobalKey<PersonDialogStatefulState>();
 
-class PersonDialog extends StatelessWidget {
-  const PersonDialog({super.key});
+class AddPersonDialog extends StatelessWidget {
+  const AddPersonDialog({super.key});
 
   @override
-  Widget build(BuildContext context) => PersonDialogStateful(key: personaDialogKey);
+  Widget build(BuildContext context) => PersonDialogStateful(key: addPersonaDialogKey);
 }
 
 class PersonDialogStateful extends StatefulWidget {
@@ -191,6 +191,69 @@ class PersonDialogStatefulState extends State<PersonDialogStateful> {
           child: Text(lang.save),
         ),
       ],
+    );
+  }
+}
+
+class ViewPersonDialog extends StatelessWidget {
+  final FengShuiModel person;
+  
+  const ViewPersonDialog({super.key, required this.person});
+
+  @override
+  Widget build(BuildContext context) => ViewPersonDialogStateful(key: addPersonaDialogKey, person: person);
+}
+
+class ViewPersonDialogStateful extends StatefulWidget {
+  final FengShuiModel person;
+  
+  const ViewPersonDialogStateful({super.key, required this.person});
+
+  @override
+  // ignore: library_private_types_in_public_api
+  ViewPersonDialogStatefulState createState() => ViewPersonDialogStatefulState();
+}
+
+class ViewPersonDialogStatefulState extends State<ViewPersonDialogStateful> {
+  
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: SizedBox(
+        width: 500,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.person),
+            const SizedBox(width: 10),
+            Text(lang.viewPerson),
+          ],
+        ),
+      ),
+      content: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            TextFormField(
+              decoration: InputDecoration(labelText: lang.name),
+              initialValue: widget.person.name,
+              readOnly: true,
+            ),
+            const SizedBox(height: 10),
+            TextFormField(
+              decoration: InputDecoration(labelText: lang.gender),
+              initialValue: widget.person.gender.name,
+              readOnly: true,
+            ),
+            const SizedBox(height: 10),
+            TextFormField(
+              decoration: InputDecoration(labelText: lang.date_birth),
+              initialValue: dateToString(widget.person.birthDate),
+              readOnly: true,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

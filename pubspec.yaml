@@ -20,6 +20,8 @@ dependencies:
     sdk: flutter
   uuid: ^4.5.1
   syncfusion_flutter_datagrid: ^27.1.58
+  logger: ^2.4.0
+  recase: ^4.1.0
 
 dev_dependencies:
   flutter_test:

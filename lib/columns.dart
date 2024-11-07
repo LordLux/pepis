@@ -53,22 +53,6 @@ List<GridColumn> peopleColumns = [
     ),
   ),
   GridColumn(
-    columnName: 'kiA',
-    label: Container(
-      padding: const EdgeInsets.all(8),
-      alignment: Alignment.center,
-      child: Text(lang.kiA),
-    ),
-  ),
-  GridColumn(
-    columnName: 'kiB',
-    label: Container(
-      padding: const EdgeInsets.all(8),
-      alignment: Alignment.center,
-      child: Text(lang.kiB),
-    ),
-  ),
-  GridColumn(
     columnName: 'kua',
     label: Container(
       padding: const EdgeInsets.all(8),

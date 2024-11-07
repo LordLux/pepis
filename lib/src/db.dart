@@ -1,6 +1,7 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'models.dart';
+import 'services/core_functions.dart';
 
 class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper._internal();
@@ -34,8 +35,6 @@ class DatabaseHelper {
             gender INTEGER NOT NULL,
             birthDate TEXT NOT NULL,
             total INTEGER NOT NULL,
-            kiA INTEGER NOT NULL,
-            kiB INTEGER NOT NULL,
             kua INTEGER NOT NULL,
             energy INTEGER NOT NULL,
             ki TEXT NOT NULL,
@@ -55,10 +54,10 @@ class DatabaseHelper {
       final db = await database;
       await db.insert('people', person.toMap());
 
-      print('Person ${person.name} inserted');
+      logSuccess('Person ${person.name} inserted');
       return 0;
     } catch (e) {
-      print('DB Error: $e');
+      logErr('DB Error: $e');
       return 1;
     }
   }
@@ -70,6 +69,16 @@ class DatabaseHelper {
       return FengShuiModel.fromMap(maps[i]);
     });
     return people;
+  }
+  
+  Future<FengShuiModel> getPersonById(int id) async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.query(
+      'people',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+    return FengShuiModel.fromMap(maps.first);
   }
 
   Future<int> updatePerson(FengShuiModel person) async {
@@ -95,7 +104,7 @@ class DatabaseHelper {
     final db = await database;
     final tables = ['people'];
     for (final table in tables) await db.delete(table);
-    print('Database cleared!');
+    logInfo('Database cleared!');
   }
 }
 

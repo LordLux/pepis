@@ -4,6 +4,8 @@
     
     "@_ACTIONS": {},
     "addPerson": "Add Person",
+    "viewPerson": "View Person",
+    "editPerson": "Edit Person",
     "save": "Save",
     
     "@_LABELS":{},

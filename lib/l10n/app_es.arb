@@ -5,6 +5,8 @@
     "@_ACTIONS": { },
     "addPerson": "Agregar Persona",
     "save": "Guardar",
+    "viewPerson": "Ver Persona",
+    "editPerson": "Editar Persona",
 
     "@_LABELS": { },
     "gender_F": "Mujer",
@@ -25,7 +27,7 @@
     "date_birth": "Fecha de Nacimiento",
     "date_year": "Año",
     "colFecha": "Col Fecha",
-    "total": "suma",
+    "total": "Suma",
     "kiA": "kiA",
     "kiB": "kiB",
     "energy": "Energía",
