@@ -22,6 +22,8 @@ dependencies:
   syncfusion_flutter_datagrid: ^27.1.58
   logger: ^2.4.0
   recase: ^4.1.0
+  shared_preferences: ^2.3.3
+  rxdart: ^0.28.0
 
 dev_dependencies:
   flutter_test:

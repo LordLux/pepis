@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:pepis/src/datasource.dart';
-import 'package:pepis/src/models.dart';
 import 'package:pepis/vars.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
+import 'package:rxdart/rxdart.dart';
 
 import 'columns.dart';
+import 'config/config.dart';
 import 'src/db.dart';
 import 'src/services/core_functions.dart';
-import 'src/services/functions.dart';
 import 'src/widgets/dialogs.dart';
-import 'src/widgets/persona.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,46 +23,97 @@ void main() async {
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
-
   @override
-  State<MyApp> createState() => _MyAppState();
+  MyAppState createState() => MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
-  Locale _locale = const Locale('es'); // Default to English
+class MyAppState extends State<MyApp> {
+  final BehaviorSubject<Locale?> _notifierLocale = BehaviorSubject<Locale?>();
+  Future? _futureFun;
+  Locale _currentLocale = const Locale(AppConfig.defaultLanguage, '');
 
-  // Function to update the locale
-  void _changeLocale(String languageCode) {
-    setState(() {
-      _locale = Locale(languageCode);
+  @override
+  void initState() {
+    super.initState();
+
+    _futureFun = _initData();
+
+    _notifierLocale.stream.listen((Locale? locale) async {
+      if (locale != null && (locale.languageCode != _currentLocale.languageCode)) {
+        final prefs = await SharedPreferences.getInstance();
+        String newLocale = locale.languageCode;
+        await prefs.setString('appLocale', newLocale);
+        setState(() {
+          _currentLocale = locale;
+        });
+      }
     });
   }
 
   @override
+  void dispose() {
+    _notifierLocale.close();
+    super.dispose();
+  }
+
+  Future<bool>? _initData() async {
+    final prefs = await SharedPreferences.getInstance();
+    String? lastAppLocaleCode = prefs.getString('appLocale');
+    if (lastAppLocaleCode != null) {
+      _currentLocale = Locale(lastAppLocaleCode, '');
+    }
+    return true;
+  }
+
+  List<Locale> getSupportedLocales() {
+    List<Locale> locales = [];
+    for (var element in AppConfig.supportedLanguage) {
+      locales.add(Locale(element, ''));
+    }
+    return locales;
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData.dark(useMaterial3: true),
-      themeMode: ThemeMode.dark,
-      supportedLocales: const [
-        Locale('en'), // English
-        Locale('es'), // Spanish
-      ],
-      localizationsDelegates: const [
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      locale: _locale,
-      home: MyHomePage(onLocaleChange: _changeLocale),
+    return FutureBuilder(
+      future: _futureFun,
+      builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+        if (snapshot.hasData) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: 'Feng Shui',
+            theme: ThemeData.dark(useMaterial3: true),
+            themeMode: ThemeMode.dark,
+            supportedLocales: const [
+              Locale('en'), // English
+              Locale('es'), // Spanish
+            ],
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            locale: _currentLocale,
+            routes: <String, WidgetBuilder>{
+              MyHomePage.routeName: (BuildContext context) => MyHomePage(notifierLocale: _notifierLocale),
+            },
+            initialRoute: MyHomePage.routeName,
+          );
+        }
+        if (snapshot.hasError) return Container(); // here return your ErrorScreen widget
+
+        return const CircularProgressIndicator();
+      },
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  final void Function(String) onLocaleChange;
-  const MyHomePage({super.key, required this.onLocaleChange});
+  static const String routeName = '/home';
+  final BehaviorSubject<Locale?> notifierLocale;
+
+  const MyHomePage({super.key, required this.notifierLocale});
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -87,7 +138,11 @@ class _MyHomePageState extends State<MyHomePage> {
       final row = dataSource.rows[rowIndex];
       final int id = row.getCells().firstWhere((cell) => cell.columnName == 'id').value;
       final person = await DatabaseHelper().getPersonById(id);
-      showDialog(context: context, builder: (_) => ViewPersonDialog(person: person));
+      
+      showDialog(
+        context: context,
+        builder: (_) => ViewPersonDialog(person: person),
+      );
     });
   }
 
@@ -114,11 +169,15 @@ class _MyHomePageState extends State<MyHomePage> {
         actions: [
           ElevatedButton(
             onPressed: () {
-              // Switch between English and Spanish
-              final currentLocale = Localizations.localeOf(context).languageCode;
-              widget.onLocaleChange(currentLocale == 'en' ? 'es' : 'en');
+              widget.notifierLocale.add(const Locale("es", ""));
             },
-            child: Text(AppLocalizations.of(context)!.localeName),
+            child: const Text("ES"),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              widget.notifierLocale.add(const Locale("en", ""));
+            },
+            child: const Text("EN"),
           ),
         ],
       ),
@@ -169,4 +228,5 @@ class _MyHomePageState extends State<MyHomePage> {
   - fix language not updating
 */
 
+// ignore: unused_element, prefer_typing_uninitialized_variables
 var _;

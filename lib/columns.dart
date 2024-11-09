@@ -3,7 +3,7 @@ import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
 import 'vars.dart';
 
-List<GridColumn> peopleColumns = [
+List<GridColumn> get peopleColumns => [
   GridColumn(
     columnName: 'id',
     label: Container(
