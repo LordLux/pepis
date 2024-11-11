@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:pepis/config/config.dart';
 
 import '../../vars.dart';
-import '../services/core_functions.dart';
 
 class Tabs extends StatelessWidget {
   const Tabs({super.key});
@@ -32,7 +31,8 @@ class TabsStatefulState extends State<TabsStateful> {
 
   void iconPick() {}
 
-  //TODO make into stateful widget with submitform and checks
+  //TODO
+  //make into stateful widget with submitform and checks
   void _showAddTabDialog() {
     showDialog(
       context: context,

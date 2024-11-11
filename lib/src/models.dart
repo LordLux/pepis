@@ -1,7 +1,4 @@
-import 'dart:math';
-
 import 'package:pepis/vars.dart';
-import 'package:uuid/uuid.dart';
 
 import 'enums.dart';
 import 'services/functions.dart';

@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pepis/src/enums.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
 import '../models.dart';
-import '../services/functions.dart';
 
 class PersonaTile extends StatelessWidget {
   final FengShuiModel person;

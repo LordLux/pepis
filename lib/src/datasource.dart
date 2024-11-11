@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'package:flutter_svg/flutter_svg.dart' as svgp;
 import 'package:pepis/src/db.dart';
 import 'package:pepis/src/enums.dart';
 import 'package:pepis/src/models.dart';
@@ -42,8 +41,6 @@ class PersonaDataSource extends DataGridSource {
 
   Alignment _getAlignment(DataGridCell cell) {
     return Alignment.center;
-    final value = cell.value;
-    return (value is int) ? Alignment.centerRight : Alignment.center;
   }
 
   String _getTextToDisplay(DataGridCell cell) {
@@ -54,9 +51,6 @@ class PersonaDataSource extends DataGridSource {
   }
 
   TextStyle _getStyleToDisplay(DataGridCell cell) {
-    final value = cell.value;
-    final String columnName = cell.columnName;
-
     return const TextStyle();
   }
 

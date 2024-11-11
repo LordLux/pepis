@@ -15,7 +15,6 @@ import 'src/db.dart';
 import 'src/selected.dart';
 import 'src/services/core_functions.dart';
 import 'src/widgets/dialogs.dart';
-import 'src/widgets/svg.dart';
 import 'src/widgets/tabs.dart';
 
 void main() async {
@@ -122,11 +121,11 @@ class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.notifierLocale});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<MyHomePage> createState() => MyHomePageState();
 }
 
-GlobalKey<_MyHomePageState> homepageDialogKey = GlobalKey<_MyHomePageState>();
-class _MyHomePageState extends State<MyHomePage> {
+GlobalKey<MyHomePageState> homepageDialogKey = GlobalKey<MyHomePageState>();
+class MyHomePageState extends State<MyHomePage> {
   late Future<PersonaDataSource> _peopleDataSource;
   final DataGridController _dataGridController = DataGridController();
 
@@ -137,21 +136,22 @@ class _MyHomePageState extends State<MyHomePage> {
         (_) => refreshTable(),
       );
   
-  //TODO fix changing selection
+//TODO
+//fix changing selection
   void _handleTap(DataGridCellTapDetails details) async {
     //logInfo('Cell tapped: ${SelectionHandler.selected.value ? 'deselecting' : 'selecting'}');
     final int? prevId = SelectionHandler.selected.value ? SelectionHandler.get!.id : null;
     final int? newId = _dataGridController.selectedRow?.getCells()[0].value;
-    print('prevId: $prevId, newId: $newId');
+    logInfo('prevId: $prevId, newId: $newId');
 
     if (prevId == newId) {
       // deselecting
       _deselect();
-      print('deselected');
+      logInfo('deselected');
     } else {
       // selecting
       await _selectPerson(details);
-      print(SelectionHandler.get!.name);
+      logInfo(SelectionHandler.get!.name);
     }
   }
 
@@ -276,6 +276,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
             ),
+            //TODO
+            //when last item is selected, scroll to bottom of table to compensate
             ValueListenableBuilder(
               valueListenable: SelectionHandler.selected,
               builder: (context, selected, _) {

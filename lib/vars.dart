@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:pepis/src/enums.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-
-import 'src/services/core_functions.dart';
 
 // Dynamic
 DateTime epoch = DateTime.fromMillisecondsSinceEpoch(0);
