@@ -70,15 +70,24 @@ class DatabaseHelper {
     });
     return people;
   }
-  
+
   Future<FengShuiModel> getPersonById(int id) async {
+    final List<Map<String, dynamic>> maps = await _getFromID(id);
+    return FengShuiModel.fromMap(maps.first);
+  }
+
+  Future<List<Map<String, dynamic>>> _getFromID(int id) async {
     final db = await database;
-    final List<Map<String, dynamic>> maps = await db.query(
+    return await db.query(
       'people',
       where: 'id = ?',
       whereArgs: [id],
     );
-    return FengShuiModel.fromMap(maps.first);
+  }
+
+  Future<SelectionModel> getSelectionById(int id) async {
+    final List<Map<String, dynamic>> maps = await _getFromID(id);
+    return SelectionModel.fromMap(maps.first);
   }
 
   Future<int> updatePerson(FengShuiModel person) async {

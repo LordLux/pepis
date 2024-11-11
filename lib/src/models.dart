@@ -25,7 +25,7 @@ class FengShuiModel {
   late Direction direction;
   late Materials material;
 
-  late String starDistribution;
+  late StarDistribution starDistribution;
 
   FengShuiModel({
     this.id,
@@ -61,6 +61,15 @@ class FengShuiModel {
     );
   }
 
+  factory FengShuiModel.fromSelection(SelectionModel selection) {
+    return FengShuiModel(
+      id: selection.id,
+      name: selection.name,
+      gender: selection.gender,
+      birthDate: selection.birthDate,
+    );
+  }
+
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -76,4 +85,54 @@ class FengShuiModel {
       'starDistribution': starDistribution,
     };
   }
+}
+
+class SelectionModel {
+  int? id;
+  String name;
+  Gender gender;
+  DateTime birthDate;
+
+  SelectionModel({
+    this.id,
+    required this.name,
+    required this.gender,
+    required this.birthDate,
+  });
+
+  factory SelectionModel.fromMap(Map<String, dynamic> map) {
+    return SelectionModel(
+      id: map['id'],
+      name: map['name'],
+      gender: Gender.values[map['gender']],
+      birthDate: stringToDate(map['birthDate'])!,
+    );
+  }
+
+  factory SelectionModel.fromPerson(FengShuiModel person) {
+    return SelectionModel(
+      id: person.id,
+      name: person.name,
+      gender: person.gender,
+      birthDate: person.birthDate,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'name': name,
+      'gender': gender.index,
+      'birthDate': dateToString(birthDate),
+    };
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return (other is SelectionModel) && (id == other.id && name == other.name && gender == other.gender && birthDate == other.birthDate);
+  }
+
+  @override
+  int get hashCode => id.hashCode ^ name.hashCode ^ gender.hashCode ^ birthDate.hashCode;
 }

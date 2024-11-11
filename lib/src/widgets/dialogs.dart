@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:pepis/src/widgets/compass.dart';
 
 import '../../vars.dart';
+import '../datasource.dart';
 import '../db.dart';
 import '../enums.dart';
 import '../models.dart';
@@ -24,6 +26,8 @@ class PersonDialogStateful extends StatefulWidget {
   // ignore: library_private_types_in_public_api
   PersonDialogStatefulState createState() => PersonDialogStatefulState();
 }
+
+//
 
 GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
@@ -55,10 +59,10 @@ class PersonDialogStatefulState extends State<PersonDialogStateful> {
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Center(child: Text(lang.warningDialogFillAllFields, style: TextStyle(color: Theme.of(context).colorScheme.primary))),
+          content: Center(child: Text(lang.warningDialogFillAllFields, style: TextStyle(color: theme.colorScheme.primary))),
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(35.0)),
-          backgroundColor: Theme.of(context).colorScheme.onPrimary,
+          backgroundColor: theme.colorScheme.onPrimary,
         ),
       );
     }
@@ -77,14 +81,16 @@ class PersonDialogStatefulState extends State<PersonDialogStateful> {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Expanded(flex: 2, child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(Icons.person_add),
-                const SizedBox(width: 10),
-                Text(lang.addPerson),
-              ],
-            )),
+            Expanded(
+                flex: 2,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.person_add),
+                    const SizedBox(width: 10),
+                    Text(lang.addPerson),
+                  ],
+                )),
             SizedBox(
               child: ElevatedButton(
                 onPressed: random,
@@ -196,8 +202,8 @@ class PersonDialogStatefulState extends State<PersonDialogStateful> {
 }
 
 class ViewPersonDialog extends StatelessWidget {
-  final FengShuiModel person;
-  
+  final SelectionModel person;
+
   const ViewPersonDialog({super.key, required this.person});
 
   @override
@@ -205,8 +211,8 @@ class ViewPersonDialog extends StatelessWidget {
 }
 
 class ViewPersonDialogStateful extends StatefulWidget {
-  final FengShuiModel person;
-  
+  final SelectionModel person;
+
   const ViewPersonDialogStateful({super.key, required this.person});
 
   @override
@@ -215,43 +221,144 @@ class ViewPersonDialogStateful extends StatefulWidget {
 }
 
 class ViewPersonDialogStatefulState extends State<ViewPersonDialogStateful> {
-  
+  late FengShuiModel person;
+
+  @override
+  void initState() {
+    super.initState();
+    person = FengShuiModel.fromSelection(widget.person);
+  }
+
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: SizedBox(
-        width: 500,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.person),
-            const SizedBox(width: 10),
-            Text(lang.viewPerson),
-          ],
+    return SizedBox(
+      height: 420,
+      child: AlertDialog(
+        title: SizedBox(
+          width: 500,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.person),
+              const SizedBox(width: 10),
+              Text(person.name),
+            ],
+          ),
         ),
-      ),
-      content: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            TextFormField(
-              decoration: InputDecoration(labelText: lang.name),
-              initialValue: widget.person.name,
-              readOnly: true,
-            ),
-            const SizedBox(height: 10),
-            TextFormField(
-              decoration: InputDecoration(labelText: lang.gender),
-              initialValue: widget.person.gender.name,
-              readOnly: true,
-            ),
-            const SizedBox(height: 10),
-            TextFormField(
-              decoration: InputDecoration(labelText: lang.date_birth),
-              initialValue: dateToString(widget.person.birthDate),
-              readOnly: true,
-            ),
-          ],
+        content: SizedBox(
+          height: 466,
+          width: 600,
+          child: Row(
+            children: [
+              Expanded(
+                flex: 10,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TextFormField(
+                      decoration: InputDecoration(
+                        labelText: lang.gender,
+                        floatingLabelAlignment: FloatingLabelAlignment.center,
+                        border: const OutlineInputBorder(),
+                      ),
+                      initialValue: person.gender.name,
+                      style: TextStyle(color: getGenderColor(person.gender)),
+                      textAlign: TextAlign.center,
+                      readOnly: true,
+                    ),
+                    const SizedBox(height: 10),
+                    TextFormField(
+                      decoration: InputDecoration(
+                        labelText: lang.date_birth,
+                        floatingLabelAlignment: FloatingLabelAlignment.center,
+                        border: const OutlineInputBorder(),
+                      ),
+                      initialValue: dateToStringFormattedES(person.birthDate, " ", true),
+                      textAlign: TextAlign.center,
+                      readOnly: true,
+                    ),
+                    const SizedBox(height: 10),
+                    TextFormField(
+                      decoration: InputDecoration(
+                        labelText: lang.total,
+                        floatingLabelAlignment: FloatingLabelAlignment.center,
+                        border: const OutlineInputBorder(),
+                      ),
+                      initialValue: person.total.toString(),
+                      textAlign: TextAlign.center,
+                      readOnly: true,
+                    ),
+                    const SizedBox(height: 10),
+                    Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        TextFormField(
+                          decoration: InputDecoration(
+                            labelText: lang.energy,
+                            floatingLabelAlignment: FloatingLabelAlignment.center,
+                            border: const OutlineInputBorder(),
+                          ),
+                          initialValue: "${person.energy}  -             ‎",
+                          textAlign: TextAlign.center,
+                          readOnly: true,
+                        ),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const SizedBox(width: 94),
+                              getEnergyIcon(person.material, 17),
+                              const SizedBox(width: 5),
+                              Text(person.material.name),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    TextFormField(
+                      decoration: InputDecoration(
+                        labelText: lang.ki,
+                        floatingLabelAlignment: FloatingLabelAlignment.center,
+                        border: const OutlineInputBorder(),
+                      ),
+                      initialValue: person.ki,
+                      textAlign: TextAlign.center,
+                      readOnly: true,
+                    ),
+                    const SizedBox(height: 10),
+                    TextFormField(
+                      decoration: InputDecoration(
+                        labelText: lang.kua,
+                        floatingLabelAlignment: FloatingLabelAlignment.center,
+                        border: const OutlineInputBorder(),
+                      ),
+                      initialValue: person.kua.toString(),
+                      textAlign: TextAlign.center,
+                      readOnly: true,
+                    ),
+                    const SizedBox(height: 10),
+                    TextFormField(
+                      decoration: InputDecoration(
+                        labelText: lang.direction,
+                        floatingLabelAlignment: FloatingLabelAlignment.center,
+                        border: const OutlineInputBorder(),
+                      ),
+                      initialValue: person.direction.name,
+                      textAlign: TextAlign.center,
+                      readOnly: true,
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                flex: 18,
+                child: Transform.translate(offset: const Offset(10, 0), child: CompassWidget(person.starDistribution.list)),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:recase/recase.dart';
 
+import '../../config/config.dart';
 import '../../vars.dart';
 import '../enums.dart';
 import 'core_functions.dart';
@@ -9,7 +10,7 @@ import 'core_functions.dart';
 DateTime? stringToDate(String date, [bool strict = false]) => strict ? _stringToDateStrict(date) : _stringToDateUnStrict(date);
 
 DateTime? _stringToDateStrict(String date) {
-  switch (dateFormat) {
+  switch (Settings.dateFormat) {
     case DateFormats.DMY:
       return DateFormat('dd/MM/yyyy').tryParse(date);
     case DateFormats.MDY:
@@ -27,7 +28,7 @@ DateTime? _stringToDateUnStrict(String date) {
 }
 
 String dateToString(DateTime date) {
-  switch (dateFormat) {
+  switch (Settings.dateFormat) {
     case DateFormats.DMY:
       return DateFormat('dd/MM/yyyy').format(date);
     case DateFormats.MDY:
@@ -37,13 +38,14 @@ String dateToString(DateTime date) {
   }
 }
 
-String dateToStringFormattedES(DateTime date, [String divider = "/"]) {
+String dateToStringFormattedES(DateTime date, [String divider = "/", bool long = false]) {
   final a = DateFormat("dd", "es").format(date);
-  
+
   String format = "MMM";
-  if (longMonth) format += "M";
+  if (Settings.longMonth) format += "M";
+  if (long) format += " yyyy";
   final b = DateFormat(format, "es").format(date).titleCase;
-  
+
   return "$a$divider$b";
 }
 
@@ -57,7 +59,7 @@ bool _isValidDateUnstrict(String date) {
 }
 
 bool _isValidDateStrict(String date) {
-  switch (dateFormat) {
+  switch (Settings.dateFormat) {
     case DateFormats.DMY:
       if (DateFormat('dd/MM/yyyy').tryParse(date) == null) return false;
     case DateFormats.MDY:
@@ -137,6 +139,7 @@ void printFormattedListWithHighlight(List<List<String>> list, int highlightX, in
   return (table[colIndex][rowIndex], dateRanges[rowIndex]["end"]);
 }
 
+/// Calculate the date value based on the birth date [1 - 12]
 int _calculateDateValue(DateTime birthDate) {
   // Adjust the birthDate to a common year for comparison (e.g., 2000)
   DateTime adjustedBirthDate = DateTime(2000, birthDate.month, birthDate.day);
@@ -159,6 +162,7 @@ int _calculateDateValue(DateTime birthDate) {
   return -1;
 }
 
+/// Calculate the year value based on the birth year [1 - 9]
 int _calculateYearValue(int year) {
   int baseYear = 1901;
   int baseValue = 9;
@@ -169,7 +173,7 @@ int _calculateYearValue(int year) {
 
   if (yearValue <= 0) yearValue += 9;
 
-  return yearValue;
+  return yearValue - 1;
 }
 
 int getPartKi(int value, bool kiA) => kiA ? _getKiA(value) : _getKiB(value);
@@ -220,4 +224,4 @@ int getKua(Gender gender, int value) {
 
 dynamic vLookup(int key, Map table) => table[key];
 
-String getStarDistribution(Direction direction) => directionLookupLong[direction] ?? lang.error_notFound;
+StarDistribution getStarDistribution(Direction direction) => directionLookupLong[direction] ?? StarDistribution(-1, -2, -3, -4, -5, -6, -7, -8, err: lang.error_notFound);

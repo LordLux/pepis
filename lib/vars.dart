@@ -11,10 +11,9 @@ DateTime get now => DateTime.now();
 
 // Declare
 late AppLocalizations lang;
+late ThemeData theme;
+late ColorScheme palette;
 
-// Settings
-DateFormats dateFormat = DateFormats.DMY;
-bool longMonth = false;
 
 // Constants
 const Color femalePink = Color.fromARGB(255, 239, 131, 255);
@@ -33,8 +32,8 @@ Map<int, int> _generateKuaMapping(int startYear, int endYear, int startValue, Li
   return kuaMap;
 }
 
-final Map<int, int> kuaFemale = _generateKuaMapping(1930, now.year + 100, 8,  [8, 9, 1, 2, 3, 4, 8, 6, 7]);
-final Map<int, int> kuaMale = _generateKuaMapping(1930, now.year + 100, 8,  [7, 6, 2, 4, 3, 2, 1, 9, 8]);
+final Map<int, int> kuaFemale = _generateKuaMapping(1930, now.year + 100, 8, [8, 9, 1, 2, 3, 4, 8, 6, 7]);
+final Map<int, int> kuaMale = _generateKuaMapping(1930, now.year + 100, 8, [7, 6, 2, 4, 3, 2, 1, 9, 8]);
 
 //TODO fix out of range error
 List<List<String>> dataTable({int shift = 0}) {
@@ -57,16 +56,15 @@ List<List<String>> dataTable({int shift = 0}) {
 
     for (int col = 0; col < 12; col++) {
       rowData.add('$first.$second.$third');
-      
+
       second = (second - 1 == 0) ? 9 : second - 1; // Decrease and wrap at 1
-      third = (third + 1 > 9) ? 1 : third + 1;     // Increase and wrap at 9
+      third = (third + 1 > 9) ? 1 : third + 1; // Increase and wrap at 9
     }
 
     table.add(rowData);
   }
   return table;
 }
-
 
 final List<Map<String, dynamic>> dateRanges = [
   {"range": "4 Feb - 5 Mar", "start": DateTime(0, 2, 4), "end": DateTime(0, 3, 5)},
@@ -83,17 +81,16 @@ final List<Map<String, dynamic>> dateRanges = [
   {"range": "6 Ene - 3 Feb", "start": DateTime(1, 1, 6), "end": DateTime(1, 2, 3)},
 ];
 
-final Map<Direction, String> directionLookupLong = {
-  Direction.E: "E(+1) SE(+2) S(+4) SW(-2) W(-4) NW(-1) N(+3) NE(-3)",
-  Direction.N: "E(+3) SE(+4) S(+2) SW(-4) W(-2) NW(-3) N(+1) NE(-1)",
-  Direction.NE: "E(-3) SE(-4) S(-2) SW(+4) W(+2) NW(+3) N(-1) NE(+1)",
-  Direction.NW: "E(-1) SE(-2) S(-4) SW(+2) W(+4) NW(+1) N(-3) NE(+3)",
-  Direction.S: "E(+4) SE(+3) S(+1) SW(-3) W(-1) NW(-4) N(+2) NE(-2)",
-  Direction.SE: "E(+2) SE(+1) S(+3) SW(-1) W(-3) NW(-2) N(+4) NE(-4)",
-  Direction.SW: "E(-2) SE(-1) S(-3) SW(+1) W(+3) NW(+2) N(-4) NE(+4)",
-  Direction.W: "E(-4) SE(-3) S(-1) SW(+3) W(+1) NW(+4) N(-2) NE(+2)",
+final Map<Direction, StarDistribution> directionLookupLong = {
+  Direction.E: StarDistribution(1, 2, 4, -2, -4, -1, 3, -3),
+  Direction.N: StarDistribution(3, 4, 2, -4, -2, -3, 1, -1),
+  Direction.NE: StarDistribution(-3, -4, -2, 4, 2, 3, -1, 1),
+  Direction.NW: StarDistribution(-1, -2, -4, 2, 4, 1, -3, 3),
+  Direction.S: StarDistribution(4, 3, 1, -3, -1, -4, 2, -2),
+  Direction.SE: StarDistribution(2, 1, 3, -1, -3, -2, 4, -4),
+  Direction.SW: StarDistribution(-2, -1, -3, 1, 3, 2, -4, 4),
+  Direction.W: StarDistribution(-4, -3, -1, 3, 1, 4, -2, 2),
 };
-
 
 final Map<DateTime, int> dateIndexTable = {
   DateTime(0, 1, 5): 12,

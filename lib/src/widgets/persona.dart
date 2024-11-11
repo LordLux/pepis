@@ -42,7 +42,7 @@ class _PersonaTileState extends State<_PersonaTile> {
           Text(widget.person.energy.toString()),
           Text(widget.person.ki),
           Text(widget.person.kua.toString()),
-          Text(widget.person.starDistribution),
+          Text(widget.person.starDistribution.string),
         ],
       ),
     );

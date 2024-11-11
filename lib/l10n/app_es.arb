@@ -20,6 +20,10 @@
     "wood": "Madera",
     "fire": "Fuego",
     "metal": "Metal",
+    "multiselection": "Multi-Select",
+    "newTab": "Nueva Tab",
+    "addTab": "Agregar Tab",
+    "cancel": "Cancelar",
     
     "id": "ID",
     "name": "Nombre",
