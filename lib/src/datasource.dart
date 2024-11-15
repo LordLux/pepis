@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:pepis/src/db.dart';
 import 'package:pepis/src/enums.dart';
-import 'package:pepis/src/models.dart';
+import 'package:pepis/src/classes.dart';
 import 'package:pepis/vars.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 

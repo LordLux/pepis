@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pepis/src/enums.dart';
 
-import '../models.dart';
+import '../classes.dart';
 
 class PersonaTile extends StatelessWidget {
   final FengShuiModel person;

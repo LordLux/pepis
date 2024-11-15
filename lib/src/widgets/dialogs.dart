@@ -1,11 +1,14 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:pepis/config/config.dart';
 import 'package:pepis/src/widgets/compass.dart';
 
 import '../../vars.dart';
 import '../datasource.dart';
 import '../db.dart';
 import '../enums.dart';
-import '../models.dart';
+import '../classes.dart';
 import '../services/functions.dart';
 import '../services/input_formatters.dart';
 import '../services/random.dart';
@@ -222,11 +225,13 @@ class ViewPersonDialogStateful extends StatefulWidget {
 
 class ViewPersonDialogStatefulState extends State<ViewPersonDialogStateful> {
   late FengShuiModel person;
+  late bool star;
 
   @override
   void initState() {
     super.initState();
     person = FengShuiModel.fromSelection(widget.person);
+    star = Settings.initialStar;
   }
 
   @override
@@ -238,11 +243,38 @@ class ViewPersonDialogStatefulState extends State<ViewPersonDialogStateful> {
           width: 500,
           child: Row(
             mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Icon(Icons.person),
-              const SizedBox(width: 10),
-              Text(person.name),
+              Expanded(
+                flex: 5,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(person.gender == Gender.M ? Icons.person : Icons.person_2, size: 30),
+                    const SizedBox(width: 10),
+                    Text(person.name),
+                  ],
+                ),
+              ),
+              Expanded(
+                flex: 4,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text(lang.star, style: const TextStyle(fontSize: 17)),
+                    const SizedBox(width: 10),
+                    Switch(
+                      value: star,
+                      onChanged: (bool value) {
+                        setState(() {
+                          star = value;
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
         ),
@@ -353,14 +385,101 @@ class ViewPersonDialogStatefulState extends State<ViewPersonDialogStateful> {
                   ],
                 ),
               ),
-              Expanded(
-                flex: 18,
-                child: Transform.translate(offset: const Offset(10, 0), child: CompassWidget(person.starDistribution.list)),
-              ),
+              if (star)
+                Expanded(
+                  flex: 18,
+                  child: Transform.translate(
+                    offset: const Offset(10, 0),
+                    child: Builder(builder: (context) {
+                      final List<String> directions = person.starDistribution.list;
+                      final int targetIndex = directions.indexOf("+1");
+                      return Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Transform.rotate(
+                            angle: pi / (targetIndex % 2 == 0 ? .5 : 4),
+                            child: Image.asset('assets/icons/compass.png', width: 250)),
+                          CompassStar(directions),
+                        ],
+                      );
+                    }),
+                  ),
+                ),
+              if (!star)
+                Expanded(
+                  flex: 18,
+                  child: CompassTable(person.starDistribution.list),
+                ),
             ],
           ),
         ),
       ),
+    );
+  }
+}
+
+//
+
+class CurveSelectionDialog extends StatelessWidget {
+
+  CurveSelectionDialog({super.key});
+
+  // List of all Flutter animation curves
+  final Map<String, Curve> _curves = {
+    'Linear': Curves.linear,
+    'Ease': Curves.ease,
+    'Ease In': Curves.easeIn,
+    'Ease In Back': Curves.easeInBack,
+    'Ease Out': Curves.easeOut,
+    'Ease In Out': Curves.easeInOut,
+    'Ease In Out Back': Curves.easeInOutBack,
+    'Ease In Out Circ': Curves.easeInCirc,
+    'Ease In Out Cubic': Curves.easeInOutCubic,
+    'Ease In Out Cubic Emphasized': Curves.easeInOutCubicEmphasized,
+    'Ease In Out Expo': Curves.easeInOutExpo,
+    'Fast Ease In To Slow Ease Out': Curves.fastEaseInToSlowEaseOut,
+    'Ease In Circ': Curves.easeInCirc,
+    'Ease In Cubic': Curves.easeInCubic,
+    'Ease Out Circ': Curves.easeOutCirc,
+    'Ease Out Cubic': Curves.easeOutCubic,
+    'Bounce In': Curves.bounceIn,
+    'Bounce Out': Curves.bounceOut,
+    'Bounce In Out': Curves.bounceInOut,
+    'Elastic In': Curves.elasticIn,
+    'Elastic Out': Curves.elasticOut,
+    'Elastic In Out': Curves.elasticInOut,
+    'Fast Out Slow In': Curves.fastOutSlowIn,
+    'Slow Middle': Curves.slowMiddle,
+    'Decelerate': Curves.decelerate,
+  };
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Choose Animation Curve'),
+      content: SizedBox(
+        width: double.maxFinite,
+        child: ListView.builder(
+          itemCount: _curves.length,
+          itemBuilder: (context, index) {
+            final curveName = _curves.keys.elementAt(index);
+            final curve = _curves[curveName];
+            return ListTile(
+              title: Text(curveName),
+              onTap: () {
+                Settings.chosenCurve = curve!;
+                Navigator.of(context).pop();
+              },
+            );
+          },
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Cancel'),
+        ),
+      ],
     );
   }
 }

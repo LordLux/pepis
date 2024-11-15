@@ -12,7 +12,10 @@ class AppConfig {
 class Settings {
   static DateFormats dateFormat = DateFormats.DMY;
   static bool longMonth = true;
-  static bool multiselection = false;
+  static ValueNotifier<bool> multiselection = ValueNotifier(false);
+  static bool initialStar = true;
+  static Curve chosenCurve = Curves.easeInOut;
+  static double summarySize = 250;
 }
 
 class TabManager {

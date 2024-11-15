@@ -137,9 +137,9 @@ class TabsStatefulState extends State<TabsStateful> {
               children: [
                 Text(lang.multiselection),
                 Switch(
-                  value: Settings.multiselection,
+                  value: Settings.multiselection.value,
                   onChanged: (bool? value) => setState(() {
-                    Settings.multiselection = value!;
+                    Settings.multiselection.value = value!;
                   }),
                 ),
               ],

@@ -1,7 +1,9 @@
+import 'dart:io';
 import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'dart:developer' as developer;
 
 import '../../vars.dart';
@@ -186,6 +188,7 @@ void logErr(final dynamic msg, [Object? error]) {
   logger.e(msg, error: error, stackTrace: StackTrace.current, time: now);
   // ignore: avoid_print
   if (!kDebugMode) print(msg);
+  logToFile(msg);
   //log(msg, Colors.red, Colors.transparent, error);
 }
 
@@ -235,4 +238,32 @@ void logMulti(List<List<dynamic>> messages) {
     logMessage += '$escapeCode$bgEscapeCode$msg';
   }
   developer.log(logMessage);
+}
+
+Future<void> logToFile(String message) async {
+  try {
+    // Request storage permissions
+    var status = await Permission.storage.request();
+    if (!status.isGranted) {
+      logWarn("Storage permission not granted");
+      return;
+    }
+
+    // Get the Downloads directory
+    Directory? downloadsDirectory = Directory('/storage/emulated/0/Download');
+
+    // Create the log file in the Downloads folder
+    File logFile = File('${downloadsDirectory.path}/app_log.txt');
+
+    // Get the current timestamp
+    String timestamp = DateTime.now().toIso8601String();
+
+    // Format the log message
+    String logMessage = "[$timestamp] $message\n";
+
+    // Append the log message to the file
+    await logFile.writeAsString(logMessage, mode: FileMode.append, flush: true);
+  } catch (e) {
+    log("Error writing log: $e");
+  }
 }

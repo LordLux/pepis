@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pepis/src/models.dart';
+import 'package:pepis/src/classes.dart';
 
 class SelectionHandler {
   static SelectionModel? _selected;

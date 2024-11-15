@@ -134,7 +134,7 @@ void printFormattedListWithHighlight(List<List<String>> list, int highlightX, in
   List<List<String>> table = dataTable();
   int rowIndex = _calculateDateValue(birthDate);
   int colIndex = _calculateYearValue(birthDate.year);
-  printFormattedListWithHighlight(table, colIndex, rowIndex);
+  //printFormattedListWithHighlight(table, colIndex, rowIndex);
 
   return (table[colIndex][rowIndex], dateRanges[rowIndex]["end"]);
 }
@@ -176,21 +176,32 @@ int _calculateYearValue(int year) {
   return yearValue - 1;
 }
 
+/// Gets KI A or KI B based on the value
 int getPartKi(int value, bool kiA) => kiA ? _getKiA(value) : _getKiB(value);
 
+/// Gets the first digit of the value
 int _getKiA(int value) {
   if (value >= 10) return int.parse(value.toString()[0]);
   return 0;
 }
 
+/// Gets the last digit of the value
 int _getKiB(int value) {
   if (value >= 10) return int.parse(value.toString().substring(value.toString().length - 1));
   return value;
 }
 
-int getEnergy(int year, int g, int h) {
-  if (year != 2000) return 11 - (g + h);
-  return 10 - (g + h);
+/// Gets the energy value based on the year and KI A and KI B values [0-9]
+int getEnergy(int year, int kiaA, int kiaB) {
+  if (year != 2000) return reduce(11 - (kiaA + kiaB));
+  return reduce(10 - (kiaA + kiaB));
+}
+
+int reduce(int number) {
+  while (number > 9) //
+    number = number.toString().split('').map(int.parse).reduce((a, b) => a + b); // Sums all the digits until it's a single digit
+
+  return number;
 }
 
 (int, int) getKGen(int kiA, int kiB, Gender g, int en) {
@@ -215,13 +226,49 @@ int _getKGen2(Gender g, int o, int p, int k) {
   return k;
 }
 
-int getKua(Gender gender, int value) {
-  int defaultValue = -1;
-  if (gender == Gender.F) return kuaMale[value] ?? defaultValue;
-  if (gender == Gender.M) return kuaFemale[value] ?? defaultValue;
-  return defaultValue;
+(int, Animal) getKua(DateTime birthDate, Gender gender) {
+  final int year = birthDate.year;
+  final int lunarYear;
+
+  // Se la data di nascita è prima del Capodanno Cinese, considera l'anno precedente
+  if (chineseNewYearDates.containsKey(year) && birthDate.isBefore(chineseNewYearDates[year]!)) //
+    lunarYear = year - 1;
+  else
+    lunarYear = year;
+
+  // Calcolo della somma delle cifre dell'anno di nascita
+  int kuaNumber;
+  if (gender == Gender.M) {
+    if (lunarYear >= 2000)
+      kuaNumber = reduce(lunarYear) - 11;
+    else
+      kuaNumber = reduce(lunarYear) - 10;
+  } else {
+    if (lunarYear >= 2000)
+      kuaNumber = reduce(lunarYear) + 4;
+    else
+      kuaNumber = reduce(lunarYear) + 5;
+  }
+
+  // Togli il segno meno
+  kuaNumber = kuaNumber.abs();
+
+  // Riduci il numero Kua a una singola cifra (esclusi i numeri 5)
+  kuaNumber = reduce(kuaNumber);
+
+  // Trattamento speciale per il numero Kua 5
+  if (kuaNumber == 5) //
+    kuaNumber = (gender == Gender.M) ? 2 : 8;
+
+  final Animal animal = Animal.values[(lunarYear - 1900) % 12];
+
+  return (kuaNumber, animal);
 }
 
-dynamic vLookup(int key, Map table) => table[key];
+Direction vDirectionLookup(int key) => directionLookup[key]!;
+
+Materials vMaterialLookup(int key) => materialLookup[key]!;
+
+dynamic vLookup(int key, Map table) => table[key]!;
 
 StarDistribution getStarDistribution(Direction direction) => directionLookupLong[direction] ?? StarDistribution(-1, -2, -3, -4, -5, -6, -7, -8, err: lang.error_notFound);

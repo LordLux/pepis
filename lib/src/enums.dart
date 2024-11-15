@@ -10,6 +10,8 @@ enum Direction { N, S, E, W, NE, NW, SE, SW }
 
 enum Materials { Wood, Fire, Earth, Metal, Water }
 
+enum Animal { Rat, Ox, Tiger, Rabbit, Dragon, Snake, Horse, Goat, Monkey, Rooster, Dog, Pig }
+
 extension GenderX on Gender {
   String get name {
     switch (this) {
@@ -122,6 +124,37 @@ class StarDistribution {
         return w;
       case Direction.NW:
         return nw;
+    }
+  }
+}
+
+extension AnimalX on Animal {
+  String get name {
+    switch (this){
+      case Animal.Rat:
+        return lang.animal_rat;
+      case Animal.Ox:
+        return lang.animal_ox;
+      case Animal.Tiger:
+        return lang.animal_tiger;
+      case Animal.Rabbit:
+        return lang.animal_rabbit;
+      case Animal.Dragon:
+        return lang.animal_dragon;
+      case Animal.Snake:
+        return lang.animal_snake;
+      case Animal.Horse:
+        return lang.animal_horse;
+      case Animal.Goat:
+        return lang.animal_goat;
+      case Animal.Monkey:
+        return lang.animal_monkey;
+      case Animal.Rooster:
+        return lang.animal_rooster;
+      case Animal.Dog:
+        return lang.animal_dog;
+      case Animal.Pig:
+        return lang.animal_pig;
     }
   }
 }

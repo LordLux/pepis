@@ -7,7 +7,7 @@ version: 1.0.0+1
 
 
 environment:
-  sdk: ^3.5.4
+  sdk: ^3.0.0
 
 
 dependencies:
@@ -26,6 +26,9 @@ dependencies:
   rxdart: ^0.28.0
   syncfusion_flutter_core: ^27.1.58
   flutter_svg: ^2.0.14
+  multi_split_view: ^3.6.0
+  path_provider: ^2.0.15
+  permission_handler: ^11.0.1
 
 dev_dependencies:
   flutter_test:
